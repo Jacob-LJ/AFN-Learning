@@ -32,11 +32,19 @@
 
 /**
  `AFURLSessionManager` creates and manages an `NSURLSession` object based on a specified `NSURLSessionConfiguration` object, which conforms to `<NSURLSessionTaskDelegate>`, `<NSURLSessionDataDelegate>`, `<NSURLSessionDownloadDelegate>`, and `<NSURLSessionDelegate>`.
-
+    AFURLSessionManager 会创建并管理一个 NSURLSession 对象，该对象是通过 NSURLSessionConfiguration 进行配置创建的。并且 NSURLSession 对象遵守以下四个协议：
+            <NSURLSessionTaskDelegate>
+            <NSURLSessionDataDelegate>
+            <NSURLSessionDownloadDelegate>
+            <NSURLSessionDelegate>
+ 
+ 
  ## Subclassing Notes
 
  This is the base class for `AFHTTPSessionManager`, which adds functionality specific to making HTTP requests. If you are looking to extend `AFURLSessionManager` specifically for HTTP, consider subclassing `AFHTTPSessionManager` instead.
-
+AFHTTPSessionManager 是一个处理 HTTP 请求的通用型功能类，如果你想对 AFURLSessionManager 进行特定扩展，可以创建 AFHTTPSessionManager 的子类来进行扩展 （不建议直接子类化 AFURLSessionManager 进行扩展）
+ 
+ 
  ## NSURLSession & NSURLSessionTask Delegate Methods
 
  `AFURLSessionManager` implements the following delegate methods:
@@ -69,10 +77,12 @@
  - `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:`
 
  If any of these methods are overridden in a subclass, they _must_ call the `super` implementation first.
-
+ 以上方法如果在子类中被重载，必须在子类方法内调用 super 方法。
+ 
  ## Network Reachability Monitoring
 
  Network reachability status and change monitoring is available through the `reachabilityManager` property. Applications may choose to monitor network reachability conditions in order to prevent or suspend any outbound requests. See `AFNetworkReachabilityManager` for more details.
+ 可以通过 reachabilityManager 属性执行网络状态变更的监听操作.应用程序可以选择监视网络可访问性条件，以阻断或挂起任何出站请求。
 
  ## NSCoding Caveats
 

@@ -45,7 +45,7 @@
 @end
 
 @implementation AFHTTPSessionManager
-@dynamic responseSerializer;
+@dynamic responseSerializer; // 重载了父类 AFURLSessionManager 的属性，导致 autosynthesis 失效，需要自己来事项getter和setter
 
 + (instancetype)manager {
     return [[[self class] alloc] initWithBaseURL:nil];
@@ -70,9 +70,12 @@
     if (!self) {
         return nil;
     }
-    //对传过来的BaseUrl进行处理，如果有值且最后不包含/，url加上"/"
+    
+    //对传过来的BaseUrl进行处理，如果path有值且url不以/结尾的，给url加上"/"
+    // 参考 ViewController.m 文件中对url处理的测试方法 - test_URLByAppendingPathComponent
+    // [NSURL +URLWithString:relativeToURL](https://www.jianshu.com/p/68b6e0ceabc8)，baseURL没有以“/”结尾的情况导致方法 ++URLWithString:relativeToURL 不正常执行的情况举例
+    
     // Ensure terminal slash for baseURL path, so that NSURL +URLWithString:relativeToURL: works as expected
-    // [NSURL +URLWithString:relativeToURL](https://www.jianshu.com/p/68b6e0ceabc8)，baseURL没有以/结尾的情况列举
     if ([[url path] length] > 0 && ![[url absoluteString] hasSuffix:@"/"]) {
         url = [url URLByAppendingPathComponent:@""];
     }
@@ -99,7 +102,7 @@
     [super setResponseSerializer:responseSerializer];
 }
 
-@dynamic securityPolicy;
+@dynamic securityPolicy; // 重载了父类 AFURLSessionManager 的属性，导致 autosynthesis 失效，需要自己来事项getter和setter
 
 - (void)setSecurityPolicy:(AFSecurityPolicy *)securityPolicy {
     if (securityPolicy.SSLPinningMode != AFSSLPinningModeNone && ![self.baseURL.scheme isEqualToString:@"https"]) {

@@ -17,8 +17,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self test_rangeOfComposedCharacterSequencesForRange];
+//    [self test_rangeOfComposedCharacterSequencesForRange];
+    
+    // 测试 NSURL 的 URLByAppendingPathComponent 方法
+    [self test_URLByAppendingPathComponent];
 
+}
+
+
+- (void)test_URLByAppendingPathComponent {
+    NSString *urlStr = @"http://www.baidu.com/index.html"; // 执行 URLByAppendingPathComponent 处理后 是 http://www.baidu.com/index.html/
+//    NSString *urlStr = @"http://www.baidu.com"; // 不会执行 URLByAppendingPathComponent，以为 path 为 [url path] 为 nil
+//    NSString *urlStr = @"http://www.baidu.com/"; // 也不会执行 URLByAppendingPathComponent 因为 有 / 这个结尾
+    NSURL *url = [NSURL URLWithString:urlStr];
+    
+    //  注意 URL 为 http://www.example.com/index.html 时, 它的 path 是 '/index.html'
+    
+    if ([[url path] length] > 0 && ![[url absoluteString] hasSuffix:@"/"]) {
+        url = [url URLByAppendingPathComponent:@""];
+        /*
+         URLByAppendingPathComponent 方法作用:
+         如果原始URL不是以正斜杠结尾，而PathComponent不是以正斜杠开头，则会在返回的URL的两个部分之间插入正斜杠，除非原始URL是空字符串。
+         如果接收器是一个文件URL，而路径组件没有以尾随斜杠结尾，则此方法可以读取文件元数据以确定结果路径是否为目录。这是同步进行的，如果接收器位于网络上安装的文件系统上，则可能会产生巨大的性能成本。如果知道结果路径是否为目录，则可以调用urlbyappendingpathcomponent:is directory:method以避免此文件元数据操作。
+         */
+    }
+    NSLog(@"处理后的url - %@",url);
+    // [NSURL +URLWithString:relativeToURL](https://www.jianshu.com/p/68b6e0ceabc8)，baseURL没有以“/”结尾的情况导致方法 ++URLWithString:relativeToURL 不正常执行的情况举例
 }
 
 
