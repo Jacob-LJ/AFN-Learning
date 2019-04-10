@@ -232,6 +232,9 @@ forHTTPHeaderField:(NSString *)field;
  Creates an `NSMutableURLRequest` object with the specified HTTP method and URL string.
 
  If the HTTP method is `GET`, `HEAD`, or `DELETE`, the parameters will be used to construct a url-encoded query string that is appended to the request's URL. Otherwise, the parameters will be encoded according to the value of the `parameterEncoding` property, and set as the request body.
+ 
+ 如果请求 method 为 `GET`, `HEAD`, or `DELETE`时，会将出入的 parameters 参数构造成一个 url-编码的查询字符串(url-encoded query string)，并且拼接进请求 URL 中。
+ 否则，会根据 parameterEncoding 属性的值将出入的 parameters 参数设置到请求体中
 
  @param method The HTTP method for the request, such as `GET`, `POST`, `PUT`, or `DELETE`. This parameter must not be `nil`.
  @param URLString The URL string used to create the request URL.

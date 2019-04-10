@@ -854,7 +854,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 #pragma mark -
 
 - (void)setResponseSerializer:(id <AFURLResponseSerialization>)responseSerializer {
-    NSParameterAssert(responseSerializer);
+    NSParameterAssert(responseSerializer); // 断言，debug模式下，如果缺少该参数，crash
 
     _responseSerializer = responseSerializer;
 }

@@ -437,7 +437,7 @@ forHTTPHeaderField:(NSString *)field
                                 parameters:(id)parameters
                                      error:(NSError *__autoreleasing *)error
 {
-    NSParameterAssert(method); //断言，debug模式下，如果缺少改参数，crash
+    NSParameterAssert(method); // 断言，debug模式下，如果缺少该参数，crash
     NSParameterAssert(URLString);
 
     NSURL *url = [NSURL URLWithString:URLString];
@@ -446,6 +446,7 @@ forHTTPHeaderField:(NSString *)field
 
     NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url];
     mutableRequest.HTTPMethod = method;
+    
     // 将存放自己6个属性名的字符串数组循环遍历
     for (NSString *keyPath in AFHTTPRequestSerializerObservedKeyPaths()) {
         // self.mutableObservedChangedKeyPaths早在-init中就初始化，并在init中又对自己的6个与属性进行监听

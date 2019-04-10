@@ -82,8 +82,8 @@
 
     self.baseURL = url;
 
-    self.requestSerializer = [AFHTTPRequestSerializer serializer];
-    self.responseSerializer = [AFJSONResponseSerializer serializer];
+    self.requestSerializer = [AFHTTPRequestSerializer serializer]; // 请求序列化对象创建，
+    self.responseSerializer = [AFJSONResponseSerializer serializer]; // 父类 AFURLSessionManager 的 initWithSessionConfiguration 中也赋值了该属性AFJSONResponseSerializer响应序列对象，这里再进行一次手动赋值会触发自定义的 set 方法(set 方法就在下面两个方法)
 
     return self;
 }
@@ -98,7 +98,7 @@
 
 - (void)setResponseSerializer:(AFHTTPResponseSerializer <AFURLResponseSerialization> *)responseSerializer {
     NSParameterAssert(responseSerializer);
-
+    // 调用了父类同名属性 set 方法，该方法内会对属性进行判空操作
     [super setResponseSerializer:responseSerializer];
 }
 
@@ -136,7 +136,7 @@
                       success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
                       failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
 {
-    // 调用通用方法 dataTaskWithHTTPMethod，所有快捷方法GET HEAD POST PUT PATCH DELETE 等都是调用通用方法·
+    // 调用当前类封装的工厂方法 dataTaskWithHTTPMethod 生成特定的 task。后面所有快捷方法【GET、HEAD、POST、PUT、PATCH、DELETE】 等都是调用这个工厂方法
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"GET"
                                                         URLString:URLString
                                                        parameters:parameters
@@ -145,7 +145,8 @@
                                                           success:success
                                                           failure:failure];
 
-    [dataTask resume];
+    [dataTask resume]; // 执行网络请求；
+    // resume 方法官方解析，作用是，将状态为 suspended 的task重新启动，刚初始化得到的 task 的状态就是 suspended
 
     return dataTask;
 }
@@ -280,9 +281,12 @@
 {
     NSError *serializationError = nil;
     //把参数，还有各种东西转化为一个request
-    // 默认情况下，self.requestSerializer的类型是AFHTTPRequestSerializer，调用该类的requestWithMethod获得request。
-    // 实际上self.requestSerializer还可能配置成AFHTTPRequestSerializer的其他子类型，如AFJSONRequestSerializer、AFPropertyListRequestSerializer
-    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
+    // 默认情况下，self.requestSerializer 的类型是 AFHTTPRequestSerializer，调用该类的 requestWithMethod:URLString:parameters:error: 获得 request。
+    // 实际上 self.requestSerializer 还可能配置成 AFHTTPRequestSerializer 的其他子类型，如 AFJSONRequestSerializer、AFPropertyListRequestSerializer
+    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method
+                                                                   URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString]
+                                                                  parameters:parameters
+                                                                       error:&serializationError];
     
     // 初始化时候，对self.baseURL进行了末尾斜杠/的添加处理，这样会是方法 NSURL +URLWithString:relativeToURL: 能够正确执行
     // [NSURL +URLWithString:relativeToURL](https://www.jianshu.com/p/68b6e0ceabc8)，baseURL没有以/结尾的情况列举
